@@ -1,8 +1,13 @@
 import axios from "axios";
 
+// const API = axios.create({
+//   baseURL: "http://localhost:8080", // spring boot backend
+// });
+
 const API = axios.create({
-  baseURL: "http://localhost:8080", // spring boot backend
+  baseURL: process.env.REACT_APP_BASE_URL,
 });
+
 
 // Har request pe token add karne ke liye
 API.interceptors.request.use((config) => {
