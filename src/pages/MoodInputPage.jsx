@@ -1,69 +1,107 @@
 import React, { useState } from "react";
 import { updateSchedule } from "../services/Api";
 import { useNavigate } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 
 export default function MoodInputPage() {
-  const [mood, setMood] = useState("happy");
+  const [mood, setMood] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userId = localStorage.getItem("userId"); // login ke baad save kiya tha
+      const userId = localStorage.getItem("userId");
       if (!userId) {
         alert("User not found. Please login again.");
         return;
       }
 
       await updateSchedule(userId, mood);
-
-      // success ke baad SchedulePage par bhejna hai
       navigate("/schedule");
     } catch (err) {
       alert("Failed to update schedule");
     }
   };
 
+  return (
+    <div className="flex items-center justify-center h-screen bg-[#e0e0e0]">
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 w-[420px] p-8 rounded-2xl bg-[#e0e0e0]
+        shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]
+        transition-all duration-500"
+      >
+        <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
+          How are you feeling today?
+        </h1>
+
+        {/* 🌈 Neomorphic Dropdown for Mood */}
+        <NeomorphicSelect
+          label="Select Your Mood"
+          name="mood"
+          value={mood}
+          options={["Happy", "Sad", "Anxious", "Focused", "Tired", "Default"]}
+          onChange={(name, value) => setMood(value)}
+        />
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full py-3 rounded-xl bg-[#e0e0e0] text-gray-800 font-semibold
+          shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]
+          hover:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]
+          transition-all duration-300 mt-6"
+        >
+          Save Mood & Generate Schedule
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* 🌈 Custom Neomorphic Dropdown Component */
+function NeomorphicSelect({ label, name, value, options, onChange }) {
+  const [open, setOpen] = useState(false);
 
   return (
-  <div className="flex items-center justify-center h-screen bg-[#e0e0e0]">
-    <form
-      onSubmit={handleSubmit}
-      className="relative z-10 w-[420px] p-8 rounded-2xl bg-[#e0e0e0] 
-      shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] 
-      transition-all duration-500"
-    >
-      <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
-        How are you feeling?
-      </h1>
-
-      <select
-        value={mood}
-        onChange={(e) => setMood(e.target.value)}
-        className="w-full px-4 py-2 mb-6 rounded-xl bg-[#e0e0e0] 
-        shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] 
-        focus:outline-none"
+    <div className="relative mb-4">
+      <div
+        onClick={() => setOpen(!open)}
+        className={`w-full px-4 py-2 flex justify-between items-center rounded-xl bg-[#e0e0e0] text-gray-700
+                    cursor-pointer select-none
+                    ${open
+                      ? "shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]"
+                      : "shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]"
+                    } transition-all duration-300`}
       >
-        <option value="happy">Happy</option>
-        <option value="sad">Sad</option>
-        <option value="anxious">Anxious</option>
-        <option value="focused">Focused</option>
-        <option value="tired">Tired</option>
-        <option value="default">Default</option>
-      </select>
+        <span>{value || label}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} />
+      </div>
 
-      <button
-        type="submit"
-        className="w-full py-3 rounded-xl bg-[#e0e0e0] text-gray-800 font-semibold 
-        shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] 
-        hover:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] 
-        transition-all duration-300"
-      >
-        Save Mood & Generate Schedule
-      </button>
-    </form>
-  </div>
-);
+      {open && (
+        <div
+          className="absolute left-0 top-full mt-2 w-full rounded-xl bg-[#e0e0e0]
+                     shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]
+                     overflow-hidden z-20"
+        >
+          {options.map((opt) => (
+            <div
+              key={opt}
+              onClick={() => {
+                onChange(name, opt.toLowerCase());
+                setOpen(false);
+              }}
+              className="px-4 py-2 hover:bg-[#d4d4d4] cursor-pointer text-gray-700 transition-all"
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 
   
@@ -110,5 +148,5 @@ export default function MoodInputPage() {
   //     </form>
   //   </div>
   // );
-}
+// }
 
