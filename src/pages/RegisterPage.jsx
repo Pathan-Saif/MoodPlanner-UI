@@ -25,24 +25,28 @@ export default function RegisterPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const res = await registerUser(form);
-      if (res.data?.message?.includes("verification")) {
-        alert("A verification link has been sent to your email. Please verify before logging in.");
-      } else {
-        alert("Registered successfully! Check your email for verification link.");
-      }
-      navigate("/login");
-    } catch (err) {
-      console.error("Registration error:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Registration failed!");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    await registerUser(form);
+
+    // Backend sirf "Registered" bhej raha hai
+    alert(
+      "Registered successfully! A verification link has been sent to your email. Please verify your account before logging in."
+    );
+
+    // Redirect to login page (user cannot login until verified)
+    navigate("/login");
+
+  } catch (err) {
+    console.error("Registration error:", err.response?.data || err.message);
+    alert(err.response?.data?.message || "Registration failed!");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center h-screen bg-[#e0e0e0]">
