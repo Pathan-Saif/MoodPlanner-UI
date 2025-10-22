@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const API = axios.create({
-  baseURL: "http://localhost:8080", // spring boot backend
-});
-
 // const API = axios.create({
-//   baseURL: process.env.REACT_APP_BASE_URL,
+//   baseURL: "http://localhost:8080", // spring boot backend
 // });
+
+const API = axios.create({
+  baseURL: process.env.REACT_APP_BASE_URL,
+});
 
 
 // Har request pe token add karne ke liye
@@ -65,3 +65,8 @@ export const deleteTask = (userId, title) => {
 export const addTask = (userId, task) => {
   return API.post(`/api/schedule/${userId}/add-task`, task);
 };
+
+
+
+// ✅ Verify user email after clicking verification link
+export const verifyUser = (token) => API.get(`/auth/verify?token=${token}`);
