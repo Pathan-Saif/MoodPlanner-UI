@@ -133,7 +133,8 @@ export default function RegisterPage() {
           label="Select Work Time"
           name="workTime"
           value={form.workTime}
-          options={["9 to 5", "10 to 6", "Night Shift"]}
+          // options={["9 to 5", "10 to 6", "Night Shift"]}
+          options={["Early_shift", "Regular_shift", "Late_shift"]}
           onChange={handleChange}
         />
 

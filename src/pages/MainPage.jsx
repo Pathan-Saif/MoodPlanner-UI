@@ -135,6 +135,9 @@ export default function MainPage() {
   const [alarmTime, setAlarmTime] = useState("");
   const [repeatType, setRepeatType] = useState("once");
   const [alarmSet, setAlarmSet] = useState(false);
+  const [tempHour, setTempHour] = useState(null);
+  const [tempMinute, setTempMinute] = useState(null);
+
   const alarmRef = useRef(null);
   const navigate = useNavigate();
 
@@ -195,6 +198,9 @@ export default function MainPage() {
       }
     }, 1000);
   };
+
+
+
 
   const handleCancelAlarm = () => {
     if (alarmRef.current) clearInterval(alarmRef.current);
@@ -400,36 +406,61 @@ function NeomorphicSelect({ label, name, value, options, onChange }) {
 // 🌈 NeomorphicTimePicker Component
 function NeomorphicTimePicker({ label, value, onChange }) {
   const [open, setOpen] = useState(false);
-  const [hours, minutes] = value ? value.split(":") : ["00", "00"];
+  const [tempHour, setTempHour] = useState("00");
+  const [tempMinute, setTempMinute] = useState("00");
 
-  const handleSelect = (h, m) => {
-    onChange(`${h}:${m}`);
-    setOpen(false);
+  useEffect(() => {
+    if (value) {
+      const [h, m] = value.split(":");
+      setTempHour(h);
+      setTempMinute(m);
+    }
+  }, [value]);
+
+  const hourOptions = Array.from({ length: 24 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+  const minuteOptions = Array.from({ length: 60 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+
+  const selectHour = (h) => {
+    setTempHour(h);
   };
 
-  const hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
-  const minuteOptions = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
+  const selectMinute = (m) => {
+    setTempMinute(m);
+    onChange(`${tempHour}:${m}`);
+    setOpen(false); // ✅ Only close after final minute selection
+  };
 
   return (
     <div className="relative w-full sm:w-40 mb-4">
       <div
         onClick={() => setOpen(!open)}
         className={`w-full px-4 py-2 flex justify-between items-center rounded-xl bg-[#e0e0e0] text-gray-700 cursor-pointer select-none
-                    ${open ? "shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]" : "shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]"} transition-all duration-300`}
+          ${open
+            ? "shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]"
+            : "shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]"
+          } transition-all duration-300`}
       >
         <span>{value || label}</span>
         <ChevronDown className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} />
       </div>
 
       {open && (
-        <div className="absolute left-0 top-full mt-2 w-full rounded-xl bg-[#e0e0e0] shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff] overflow-hidden z-20 flex">
+        <div className="absolute left-0 top-full mt-2 w-full rounded-xl bg-[#e0e0e0]
+            shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]
+            overflow-hidden z-20 flex max-h-60">
+
           {/* Hours */}
-          <div className="flex-1 max-h-60 overflow-y-auto border-r border-gray-300">
+          <div className="flex-1 overflow-y-auto border-r border-gray-300">
             {hourOptions.map((h) => (
               <div
                 key={h}
-                onClick={() => handleSelect(h, minutes)}
-                className={`px-4 py-2 cursor-pointer text-gray-700 hover:bg-[#d4d4d4] ${h === hours ? "font-bold" : ""}`}
+                onClick={() => selectHour(h)}
+                className={`px-4 py-2 cursor-pointer text-gray-700 hover:bg-[#d4d4d4] ${h === tempHour ? "font-bold" : ""
+                  }`}
               >
                 {h}
               </div>
@@ -437,12 +468,13 @@ function NeomorphicTimePicker({ label, value, onChange }) {
           </div>
 
           {/* Minutes */}
-          <div className="flex-1 max-h-60 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto">
             {minuteOptions.map((m) => (
               <div
                 key={m}
-                onClick={() => handleSelect(hours, m)}
-                className={`px-4 py-2 cursor-pointer text-gray-700 hover:bg-[#d4d4d4] ${m === minutes ? "font-bold" : ""}`}
+                onClick={() => selectMinute(m)}
+                className={`px-4 py-2 cursor-pointer text-gray-700 hover:bg-[#d4d4d4] ${m === tempMinute ? "font-bold" : ""
+                  }`}
               >
                 {m}
               </div>

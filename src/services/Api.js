@@ -70,3 +70,8 @@ export const addTask = (userId, task) => {
 
 // ✅ Verify user email after clicking verification link
 export const verifyUser = (token) => API.get(`/auth/verify?token=${token}`);
+
+
+// TaskDetails
+export const getTaskDetails = (title) =>
+  API.get(`/api/schedule/task/details?title=${encodeURIComponent(title)}`);

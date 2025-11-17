@@ -75,9 +75,9 @@
 
 
 import React, { useEffect, useState } from "react";
-import { getSchedule, updateTask, deleteTask, addTask } from "../services/Api";
+import { getSchedule, updateTask, deleteTask, addTask, getTaskDetails } from "../services/Api";
 import { useNavigate } from "react-router-dom";
-import { Clock, Calendar, Pencil, Trash2, Plus } from "lucide-react";
+import { Clock, Calendar, Pencil, Trash2, Plus, Eye } from "lucide-react";
 
 export default function SchedulePage() {
   const [tasks, setTasks] = useState([]);
@@ -87,6 +87,9 @@ export default function SchedulePage() {
   const [newTask, setNewTask] = useState({ title: "", timeOfDay: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [detailTask, setDetailTask] = useState(null);
+  const [taskDetails, setTaskDetails] = useState(null);
+
 
   useEffect(() => {
     (async () => {
@@ -169,6 +172,18 @@ export default function SchedulePage() {
     }
   };
 
+  const handleViewDetails = async (title) => {
+    try {
+      const res = await getTaskDetails(title);
+      setTaskDetails(res.data);   // full task object { title, timeOfDay, steps[] }
+      setDetailTask(true);        // open modal
+    } catch (err) {
+      console.error(err);
+      alert("Task details not found!");
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-[#e0e0e0] p-6 text-gray-800">
       {/* Header */}
@@ -212,6 +227,13 @@ export default function SchedulePage() {
                 </div>
 
                 <div className="flex gap-3">
+                  <button
+                    onClick={() => handleViewDetails(task.title)}
+                    className="text-gray-600 hover:text-blue-600 transition"
+                    title="View Task Details"
+                  >
+                    <Eye className="w-5 h-5" />
+                  </button>
                   <button
                     onClick={() => handleEditClick(task)}
                     className="text-gray-600 hover:text-blue-600 transition"
@@ -274,11 +296,10 @@ export default function SchedulePage() {
               <button
                 onClick={handleSaveChanges}
                 disabled={loading}
-                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
-                  loading
-                    ? "bg-gray-400 text-white shadow-none"
-                    : "bg-[#e0e0e0] text-gray-800 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] hover:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]"
-                }`}
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${loading
+                  ? "bg-gray-400 text-white shadow-none"
+                  : "bg-[#e0e0e0] text-gray-800 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] hover:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]"
+                  }`}
               >
                 {loading ? "Saving..." : "Save Changes"}
               </button>
@@ -323,13 +344,46 @@ export default function SchedulePage() {
               <button
                 onClick={handleAddTask}
                 disabled={loading}
-                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
-                  loading
-                    ? "bg-gray-400 text-white shadow-none"
-                    : "bg-[#e0e0e0] text-gray-800 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] hover:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]"
-                }`}
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${loading
+                  ? "bg-gray-400 text-white shadow-none"
+                  : "bg-[#e0e0e0] text-gray-800 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] hover:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]"
+                  }`}
               >
                 {loading ? "Adding..." : "Add Task"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {detailTask && taskDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-[#e0e0e0] p-6 rounded-2xl w-96 shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]">
+            <h3 className="text-2xl font-bold mb-4 text-gray-800">
+              {taskDetails.title}
+            </h3>
+
+            <p className="text-gray-700 mb-3 font-semibold">
+              🕒 {taskDetails.timeOfDay}
+            </p>
+
+            <h4 className="text-lg font-bold mt-3 mb-2 text-gray-800">Steps:</h4>
+            <ul className="list-disc list-inside text-gray-700 space-y-1">
+              {taskDetails.steps?.map((step, idx) => (
+                <li key={idx}>{step}</li>
+              ))}
+            </ul>
+
+            <div className="flex justify-end mt-5">
+              <button
+                onClick={() => {
+                  setDetailTask(false);
+                  setTaskDetails(null);
+                }}
+                className="px-4 py-2 rounded-xl bg-[#e0e0e0] text-gray-800 shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff] hover:shadow-[inset_6px_6px_12px_#bebebe,inset_-6px_-6px_12px_#ffffff]"
+              >
+                Close
               </button>
             </div>
           </div>

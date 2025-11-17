@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserProfile, updateUserProfil } from "../services/Api";
+import { getUserProfile, updateUserProfile } from "../services/Api";
 import { Pencil, ChevronDown } from "lucide-react";
 
 export default function UpdateUserPage() {
@@ -36,7 +36,7 @@ export default function UpdateUserPage() {
 
   const handleSaveField = async (fieldName) => {
     try {
-      await updateUserProfil(userId, formData);
+      await updateUserProfile(userId, formData);
       setEditingField(null);
       alert(`${fieldName} updated!`);
     } catch (err) {
@@ -49,7 +49,7 @@ export default function UpdateUserPage() {
     { name: "username", label: "Username", type: "text" },
     { name: "mood", label: "Mood", type: "select", options: ["happy", "sad", "anxious", "focused", "tired"] },
     { name: "occupation", label: "Occupation", type: "select", options: ["engineer", "businessman", "lawyer", "teacher", "singer"] },
-    { name: "workTime", label: "Work Time", type: "select", options: ["9 to 5", "10 to 6", "night shift"] },
+    { name: "workTime", label: "Work Time", type: "select", options: ["Early_shift", "Regular_shift", "Late_shift"] },
     { name: "gender", label: "Gender", type: "select", options: ["male", "female", "other"] },
     { name: "ageGroup", label: "Age Group", type: "select", options: ["18 to 25", "26 to 40", "41 to 60"] },
   ];
