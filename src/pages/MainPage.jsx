@@ -135,9 +135,6 @@ export default function MainPage() {
   const [alarmTime, setAlarmTime] = useState("");
   const [repeatType, setRepeatType] = useState("once");
   const [alarmSet, setAlarmSet] = useState(false);
-  const [tempHour, setTempHour] = useState(null);
-  const [tempMinute, setTempMinute] = useState(null);
-  console.log(tempHour, tempMinute);
 
   const alarmRef = useRef(null);
   const navigate = useNavigate();
